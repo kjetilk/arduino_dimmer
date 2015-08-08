@@ -60,8 +60,7 @@ void setup()
   bool success = false;
   
   for( unsigned int i = 0; i < sizeof( leds ); ++i ) {
-    success = SetPinFrequencySafe(leds[i], frequency);
-    // TODO pack successes to a byte to set success if all are true 
+    success &= SetPinFrequencySafe(leds[i], frequency);
   }
   //if the pin frequency was set successfully, turn pin 13 on
   if(success) {

@@ -50,6 +50,7 @@ byte downinputs[] = {
 unsigned int brightness[8] = {0};    // how bright the LEDs are
 int fadeAmount = 5;         // how many points to fade a LED by
 int32_t frequency = 100;    // frequency (in Hz)
+int maxlevel = 255 * 0.9;
 
 void setup()
 {
@@ -73,8 +74,10 @@ void loop()
 {
   for( unsigned int i = 0; i < sizeof( leds ); ++i ) {
     if( digitalRead( upinputs[ i ] ) == 0 ) { // Up button pressed
-      if (brightness[i] < (255 * 0.9) - fadeAmount) {
+      if (brightness[i] < maxlevel - fadeAmount) {
          brightness[i] = brightness[i] + fadeAmount;
+      } else {
+         brightness[i] = maxlevel;
       }
     }  
     if( digitalRead( downinputs[ i ] ) == 0 ) { // Down button pressed

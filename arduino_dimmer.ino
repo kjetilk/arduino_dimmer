@@ -37,14 +37,14 @@ byte upinputs[] = {
 };
 
 byte downinputs[] = { 
-  21,
   23,
   25,
   27,
   29,
   31,
   33,
-  35
+  35,
+  37
 };
 
 unsigned int brightness[8] = {0};    // how bright the LEDs are

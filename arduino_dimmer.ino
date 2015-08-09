@@ -90,8 +90,6 @@ void loop()
     
     // Write the state to the LUD
     pwmWrite(leds[i], brightness[i]);
-
-    // TODO: Deal with wrapparound?
   } 
 }
 

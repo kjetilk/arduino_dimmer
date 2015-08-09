@@ -100,6 +100,6 @@ void loop()
     // Write the state to the LUD
     pwmWrite(leds[i], brightness[i]);
   } 
-  delay(5);
+  delay(20);
 }
 

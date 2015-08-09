@@ -57,7 +57,7 @@ void setup()
   InitTimersSafe(); 
 
   //sets the frequency for the specified pins
-  bool success = false;
+  bool success = true;
   
   for( unsigned int i = 0; i < sizeof( leds ); ++i ) {
     success &= SetPinFrequencySafe(leds[i], frequency);

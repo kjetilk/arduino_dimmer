@@ -14,7 +14,7 @@
 #include <PWM.h>
 
 
-int leds[] = {
+char leds[] = {
   2,
   3,
   5,
@@ -47,13 +47,14 @@ byte downinputs[] = {
   37
 };
 
-unsigned int brightness[8] = {0};    // how bright the LEDs are
-int fadeAmount = 5;         // how many points to fade a LED by
+unsigned int brightness[8] = {100,100,100,100,100,100,100,100};    // how bright the LEDs are
+int fadeAmount = 1;         // how many points to fade a LED by
 int32_t frequency = 100;    // frequency (in Hz)
 int maxlevel = 255 * 0.9;
 
 void setup()
 {
+  Serial.begin(9600);
   //initialize all timers except for 0, to save time keeping functions
   InitTimersSafe(); 
 
@@ -68,6 +69,14 @@ void setup()
     pinMode(13, OUTPUT);
     digitalWrite(13, HIGH);    
   }
+  
+  // Initialize all inputs as pullups
+  for( unsigned int i = 0; i < sizeof( upinputs ); ++i ) {
+    pinMode(upinputs[i], INPUT_PULLUP);
+  }  
+  for( unsigned int i = 0; i < sizeof( downinputs ); ++i ) {
+    pinMode(downinputs[i], INPUT_PULLUP);
+  }  
 }
 
 void loop()
@@ -91,5 +100,6 @@ void loop()
     // Write the state to the LUD
     pwmWrite(leds[i], brightness[i]);
   } 
+  delay(5);
 }
 

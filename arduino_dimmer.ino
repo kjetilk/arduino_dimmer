@@ -73,10 +73,16 @@ void loop()
 {
   for( unsigned int i = 0; i < sizeof( leds ); ++i ) {
     if( digitalRead( upinputs[ i ] ) == 0 ) { // Up button pressed
-      brightness[i] = brightness[i] + fadeAmount;
+      if (brightness[i] < (255 * 0.9) - fadeAmount) {
+         brightness[i] = brightness[i] + fadeAmount;
+      }
     }  
     if( digitalRead( downinputs[ i ] ) == 0 ) { // Down button pressed
-      brightness[i] = brightness[i] - fadeAmount;
+      if(brightness[i] >= fadeAmount) {      
+        brightness[i] = brightness[i] - fadeAmount;
+      } else {
+        brightness[i] = 0;
+      }
     }  
     
     // Write the state to the LUD

@@ -88,6 +88,7 @@ void loop()
       } else {
          brightness[i] = maxlevel;
       }
+      Serial.println(brightness[i]);
     }  
     if( digitalRead( downinputs[ i ] ) == 0 ) { // Down button pressed
       if(brightness[i] >= fadeAmount) {      
@@ -95,6 +96,7 @@ void loop()
       } else {
         brightness[i] = 0;
       }
+      Serial.println(brightness[i]);
     }  
     
     // Write the state to the LUD

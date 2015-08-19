@@ -37,14 +37,25 @@ byte upinputs[] = {
 };
 
 byte downinputs[] = { 
-  35,
-  39,
-  43,
-  47,
+  35, // Kitchen
+  39, 
+  43, // Dining
+  47, // Living room
   34,
-  38,
-  42,
-  46
+  38, 
+  42, // WC 2.
+  46  // WC 1.
+};
+
+byte lowlimit[] = {
+  5,
+  5,
+  5,
+  5,
+  5,
+  5,
+  5,
+  38
 };
 
 unsigned int brightness[8] = {100,100,100,100,100,100,100,100};    // how bright the LEDs are
@@ -67,7 +78,9 @@ void setup()
   //if the pin frequency was set successfully, turn pin 13 on
   if(success) {
     pinMode(13, OUTPUT);
-    digitalWrite(13, HIGH);    
+    digitalWrite(13, HIGH);
+    delay(1000);    
+    digitalWrite(13, LOW);
   }
   
   // Initialize all inputs as pullups
@@ -83,6 +96,7 @@ void loop()
 {
   for( unsigned int i = 0; i < sizeof( leds ); ++i ) {
     if( digitalRead( upinputs[ i ] ) == 0 ) { // Up button pressed
+      digitalWrite(13, HIGH);
       if (brightness[i] < maxlevel - fadeAmount) {
          brightness[i] = brightness[i] + fadeAmount;
       } else {
@@ -91,6 +105,7 @@ void loop()
       Serial.println(brightness[i]);
     }  
     if( digitalRead( downinputs[ i ] ) == 0 ) { // Down button pressed
+      digitalWrite(13, HIGH);
       if(brightness[i] >= fadeAmount) {      
         brightness[i] = brightness[i] - fadeAmount;
       } else {
@@ -103,5 +118,6 @@ void loop()
     pwmWrite(leds[i], brightness[i]);
   } 
   delay(20);
+  digitalWrite(13, LOW);
 }
 

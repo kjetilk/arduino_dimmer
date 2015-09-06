@@ -54,7 +54,7 @@ byte lowlimit[] = {
   5,
   5,
   5,
-  5,
+  47,
   38
 };
 
@@ -97,20 +97,27 @@ void loop()
   for( unsigned int i = 0; i < sizeof( leds ); ++i ) {
     if( digitalRead( upinputs[ i ] ) == 0 ) { // Up button pressed
       digitalWrite(13, HIGH);
-      if (brightness[i] < maxlevel - fadeAmount) {
+      if (brightness[i] < lowlimit[i]) {
+        brightness[i] = lowlimit[i];
+      }
+      else if (brightness[i] < maxlevel - fadeAmount) {
          brightness[i] = brightness[i] + fadeAmount;
       } else {
          brightness[i] = maxlevel;
       }
+      Serial.print(i);
+      Serial.print(F("th circuit going up to "));
       Serial.println(brightness[i]);
     }  
     if( digitalRead( downinputs[ i ] ) == 0 ) { // Down button pressed
       digitalWrite(13, HIGH);
-      if(brightness[i] >= fadeAmount) {      
+      if(brightness[i] >= fadeAmount + lowlimit[i]) {      
         brightness[i] = brightness[i] - fadeAmount;
       } else {
         brightness[i] = 0;
       }
+      Serial.print(i);
+      Serial.print(F("th circuit going down to "));
       Serial.println(brightness[i]);
     }  
     

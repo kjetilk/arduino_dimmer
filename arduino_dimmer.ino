@@ -48,10 +48,10 @@ byte downinputs[] = {
 };
 
 byte lowlimit[] = {
+  53,
   5,
-  5,
-  5,
-  5,
+  36,
+  25,
   5,
   5,
   47,

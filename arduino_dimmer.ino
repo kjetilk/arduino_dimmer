@@ -13,50 +13,28 @@
 
 #include <PWM.h>
 
-
-char leds[] = {
-  2,
-  3,
-  5,
-  6,
-  7,
-  8,
-  9,
-  11
+struct Dimmer {
+    char name[8];
+    char output;
+    byte upinput;
+    byte downinput;
+    byte lowlimit;
 };
 
-byte upinputs[] = { 
-  33,
-  37,
-  41,
-  45,
-  32,
-  36,
-  40,
-  44
+// Initialize the system with background knowledge
+struct Dimmer dimmers[] = {
+  /* name       output  upinput  downinput  lowlimit */
+  { "Kitchen",       2,      33,        35,       53 },
+  { "Unassig",       3,      37,        39,        5 },
+  { "Dining",        5,      41,        43,       55 },
+  { "Living",        6,      45,        47,       25 },
+  { "Unassig",       7,      32,        34,        5 },
+  { "Unassig",       8,      36,        38,        5 },
+  { "Bathrm2",       9,      40,        42,       47 },
+  { "Bathrm1",      11,      44,        46,       38 }
 };
 
-byte downinputs[] = { 
-  35, // Kitchen
-  39, 
-  43, // Dining
-  47, // Living room
-  34,
-  38, 
-  42, // WC 2.
-  46  // WC 1.
-};
-
-byte lowlimit[] = {
-  53,
-  5,
-  36,
-  25,
-  5,
-  5,
-  47,
-  38
-};
+int dimmersize = sizeof(dimmers);
 
 unsigned int brightness[8] = {100,100,100,100,100,100,100,100};    // how bright the LEDs are
 int fadeAmount = 1;         // how many points to fade a LED by
@@ -72,8 +50,8 @@ void setup()
   //sets the frequency for the specified pins
   bool success = true;
   
-  for( unsigned int i = 0; i < sizeof( leds ); ++i ) {
-    success &= SetPinFrequencySafe(leds[i], frequency);
+  for( unsigned int i = 0; i < dimmersize; ++i ) {
+    success &= SetPinFrequencySafe(dimmers[i].output, frequency);
   }
   //if the pin frequency was set successfully, turn pin 13 on
   if(success) {
@@ -84,45 +62,49 @@ void setup()
   }
   
   // Initialize all inputs as pullups
-  for( unsigned int i = 0; i < sizeof( upinputs ); ++i ) {
-    pinMode(upinputs[i], INPUT_PULLUP);
+  for( unsigned int i = 0; i < dimmersize; ++i ) {
+    pinMode(dimmers[i].upinput, INPUT_PULLUP);
   }  
-  for( unsigned int i = 0; i < sizeof( downinputs ); ++i ) {
-    pinMode(downinputs[i], INPUT_PULLUP);
+  for( unsigned int i = 0; i < dimmersize; ++i ) {
+    pinMode(dimmers[i].downinput, INPUT_PULLUP);
   }  
 }
 
 void loop()
 {
-  for( unsigned int i = 0; i < sizeof( leds ); ++i ) {
-    if( digitalRead( upinputs[ i ] ) == 0 ) { // Up button pressed
+  for( unsigned int i = 0; i < dimmersize; ++i ) {
+    if( digitalRead( dimmers[i].upinput ) == 0 ) { // Up button pressed
       digitalWrite(13, HIGH);
-      if (brightness[i] < lowlimit[i]) {
-        brightness[i] = lowlimit[i];
+      if (brightness[i] < dimmers[i].lowlimit) {
+        brightness[i] = dimmers[i].lowlimit;
       }
       else if (brightness[i] < maxlevel - fadeAmount) {
          brightness[i] = brightness[i] + fadeAmount;
       } else {
          brightness[i] = maxlevel;
       }
+      Serial.print(dimmers[i].name);
+      Serial.print(": ");
       Serial.print(i);
       Serial.print(F("th circuit going up to "));
       Serial.println(brightness[i]);
     }  
-    if( digitalRead( downinputs[ i ] ) == 0 ) { // Down button pressed
+    if( digitalRead( dimmers[i].downinput ) == 0 ) { // Down button pressed
       digitalWrite(13, HIGH);
-      if(brightness[i] >= fadeAmount + lowlimit[i]) {      
+      if(brightness[i] >= fadeAmount + dimmers[i].lowlimit) {      
         brightness[i] = brightness[i] - fadeAmount;
       } else {
         brightness[i] = 0;
       }
+      Serial.print(dimmers[i].name);
+      Serial.print(": ");
       Serial.print(i);
       Serial.print(F("th circuit going down to "));
       Serial.println(brightness[i]);
     }  
     
     // Write the state to the LUD
-    pwmWrite(leds[i], brightness[i]);
+    pwmWrite(dimmers[i].output, brightness[i]);
   } 
   delay(20);
   digitalWrite(13, LOW);

@@ -28,8 +28,8 @@ struct Dimmer dimmers[] = {
   { "Unassig",       3,      37,        39,        5 },
   { "Dining",        5,      41,        43,       55 },
   { "Living",        6,      45,        47,       25 },
-  { "Unassig",       7,      32,        34,        5 },
-  { "Unassig",       8,      36,        38,        5 },
+  { "Master",        7,      32,        34,        5 },
+  { "ULiving",       8,      36,        38,        5 },
   { "Bathrm2",       9,      40,        42,       47 },
   { "Bathrm1",      11,      44,        46,       38 }
 };

@@ -34,7 +34,7 @@ struct Dimmer dimmers[] = {
   { "Bathrm1",      11,      44,        46,       38 }
 };
 
-int dimmersize = sizeof(dimmers);
+#define NUMBER_OF_DIMMERS 8
 
 unsigned int brightness[8] = {100,100,100,100,100,100,100,100};    // how bright the LEDs are
 int fadeAmount = 1;         // how many points to fade a LED by
@@ -50,7 +50,7 @@ void setup()
   //sets the frequency for the specified pins
   bool success = true;
   
-  for( unsigned int i = 0; i < dimmersize; ++i ) {
+  for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
     success &= SetPinFrequencySafe(dimmers[i].output, frequency);
   }
   //if the pin frequency was set successfully, turn pin 13 on
@@ -62,17 +62,17 @@ void setup()
   }
   
   // Initialize all inputs as pullups
-  for( unsigned int i = 0; i < dimmersize; ++i ) {
+  for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
     pinMode(dimmers[i].upinput, INPUT_PULLUP);
   }  
-  for( unsigned int i = 0; i < dimmersize; ++i ) {
+  for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
     pinMode(dimmers[i].downinput, INPUT_PULLUP);
   }  
 }
 
 void loop()
 {
-  for( unsigned int i = 0; i < dimmersize; ++i ) {
+  for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
     if( digitalRead( dimmers[i].upinput ) == 0 ) { // Up button pressed
       digitalWrite(13, HIGH);
       if (brightness[i] < dimmers[i].lowlimit) {

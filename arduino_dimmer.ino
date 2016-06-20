@@ -12,7 +12,6 @@
  */
 
 #include <PWM.h>
-#include <ButtonV2.h>
 
 
 struct Dimmer {
@@ -78,12 +77,21 @@ void loop()
 {
   for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
     if( digitalRead( dimmers[i].upinput ) == 0 ) { // Up button pressed
-      increase;
+      increase(i);
+      Serial.print(dimmers[i].name);
+      Serial.print(": ");
+      Serial.print(i);
+      Serial.print(F("th circuit going up to "));
+      Serial.println(brightness[i]);
     }
     if( digitalRead( dimmers[i].downinput ) == 0 ) { // Down button pressed
-      decrease;
+      decrease(i);
+      Serial.print(dimmers[i].name);
+      Serial.print(": ");
+      Serial.print(i);
+      Serial.print(F("th circuit going down to "));
+      Serial.println(brightness[i]);
     }  
-    
     // Write the state to the LUD
     // pwmWrite(dimmers[i].output, brightness[i]);
     analogWrite(dimmers[i].output, brightness[i]); // Just when developing
@@ -93,7 +101,7 @@ void loop()
   digitalWrite(13, LOW);
 }
 
-void increase()
+void increase(int i)
 {
   digitalWrite(13, HIGH);
   if (brightness[i] < dimmers[i].lowlimit) {
@@ -104,23 +112,14 @@ void increase()
   } else {
     brightness[i] = maxlevel;
   }
-  Serial.print(dimmers[i].name);
-  Serial.print(": ");
-  Serial.print(i);
-  Serial.print(F("th circuit going up to "));
-  Serial.println(brightness[i]);
-}  
+}
 
-void decrease()
+void decrease(int i)
+{
   digitalWrite(13, HIGH);
-  if(brightness[i] >= fadeAmount + dimmers[i].lowlimit) {      
+  if(brightness[i] >= fadeAmount + dimmers[i].lowlimit) {
     brightness[i] = brightness[i] - fadeAmount;
   } else {
     brightness[i] = 0;
   }
-  Serial.print(dimmers[i].name);
-  Serial.print(": ");
-  Serial.print(i);
-  Serial.print(F("th circuit going down to "));
-  Serial.println(brightness[i]);
 }

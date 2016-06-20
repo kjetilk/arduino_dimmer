@@ -12,6 +12,8 @@
  */
 
 #include <PWM.h>
+#include <ButtonV2.h>
+
 
 struct Dimmer {
     char name[8];
@@ -76,33 +78,10 @@ void loop()
 {
   for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
     if( digitalRead( dimmers[i].upinput ) == 0 ) { // Up button pressed
-      digitalWrite(13, HIGH);
-      if (brightness[i] < dimmers[i].lowlimit) {
-        brightness[i] = dimmers[i].lowlimit;
-      }
-      else if (brightness[i] < maxlevel - fadeAmount) {
-         brightness[i] = brightness[i] + fadeAmount;
-      } else {
-         brightness[i] = maxlevel;
-      }
-      Serial.print(dimmers[i].name);
-      Serial.print(": ");
-      Serial.print(i);
-      Serial.print(F("th circuit going up to "));
-      Serial.println(brightness[i]);
-    }  
+      increase;
+    }
     if( digitalRead( dimmers[i].downinput ) == 0 ) { // Down button pressed
-      digitalWrite(13, HIGH);
-      if(brightness[i] >= fadeAmount + dimmers[i].lowlimit) {      
-        brightness[i] = brightness[i] - fadeAmount;
-      } else {
-        brightness[i] = 0;
-      }
-      Serial.print(dimmers[i].name);
-      Serial.print(": ");
-      Serial.print(i);
-      Serial.print(F("th circuit going down to "));
-      Serial.println(brightness[i]);
+      decrease;
     }  
     
     // Write the state to the LUD
@@ -114,3 +93,34 @@ void loop()
   digitalWrite(13, LOW);
 }
 
+void increase()
+{
+  digitalWrite(13, HIGH);
+  if (brightness[i] < dimmers[i].lowlimit) {
+    brightness[i] = dimmers[i].lowlimit;
+  }
+  else if (brightness[i] < maxlevel - fadeAmount) {
+    brightness[i] = brightness[i] + fadeAmount;
+  } else {
+    brightness[i] = maxlevel;
+  }
+  Serial.print(dimmers[i].name);
+  Serial.print(": ");
+  Serial.print(i);
+  Serial.print(F("th circuit going up to "));
+  Serial.println(brightness[i]);
+}  
+
+void decrease()
+  digitalWrite(13, HIGH);
+  if(brightness[i] >= fadeAmount + dimmers[i].lowlimit) {      
+    brightness[i] = brightness[i] - fadeAmount;
+  } else {
+    brightness[i] = 0;
+  }
+  Serial.print(dimmers[i].name);
+  Serial.print(": ");
+  Serial.print(i);
+  Serial.print(F("th circuit going down to "));
+  Serial.println(brightness[i]);
+}

@@ -51,7 +51,9 @@ void setup()
   bool success = true;
   
   for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
-    success &= SetPinFrequencySafe(dimmers[i].output, frequency);
+//    success &= SetPinFrequencySafe(dimmers[i].output, frequency);
+      pinMode(dimmers[i].output, OUTPUT); // Just when developing
+
   }
   //if the pin frequency was set successfully, turn pin 13 on
   if(success) {
@@ -104,7 +106,9 @@ void loop()
     }  
     
     // Write the state to the LUD
-    pwmWrite(dimmers[i].output, brightness[i]);
+    // pwmWrite(dimmers[i].output, brightness[i]);
+    analogWrite(dimmers[i].output, brightness[i]); // Just when developing
+
   } 
   delay(20);
   digitalWrite(13, LOW);

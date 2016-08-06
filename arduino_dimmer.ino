@@ -42,6 +42,30 @@ int fadeAmount = 1;         // how many points to fade a LED by
 int32_t frequency = 100;    // frequency (in Hz)
 int maxlevel = 255 * 0.9;
 
+void increase(int i)
+{
+  digitalWrite(13, HIGH);
+  if (brightness[i] < dimmers[i].lowlimit) {
+    brightness[i] = dimmers[i].lowlimit;
+  }
+  else if (brightness[i] < maxlevel - fadeAmount) {
+    brightness[i] = brightness[i] + fadeAmount;
+  } else {
+    brightness[i] = maxlevel;
+  }
+}
+
+void decrease(int i)
+{
+  digitalWrite(13, HIGH);
+  if(brightness[i] >= fadeAmount + dimmers[i].lowlimit) {
+    brightness[i] = brightness[i] - fadeAmount;
+  } else {
+    brightness[i] = 0;
+  }
+}
+
+
 void setup()
 {
   Serial.begin(9600);
@@ -101,25 +125,3 @@ void loop()
   digitalWrite(13, LOW);
 }
 
-void increase(int i)
-{
-  digitalWrite(13, HIGH);
-  if (brightness[i] < dimmers[i].lowlimit) {
-    brightness[i] = dimmers[i].lowlimit;
-  }
-  else if (brightness[i] < maxlevel - fadeAmount) {
-    brightness[i] = brightness[i] + fadeAmount;
-  } else {
-    brightness[i] = maxlevel;
-  }
-}
-
-void decrease(int i)
-{
-  digitalWrite(13, HIGH);
-  if(brightness[i] >= fadeAmount + dimmers[i].lowlimit) {
-    brightness[i] = brightness[i] - fadeAmount;
-  } else {
-    brightness[i] = 0;
-  }
-}

@@ -13,7 +13,6 @@
 
 #include <PWM.h>
 
-
 struct Dimmer {
     char name[8];
     char output;
@@ -31,11 +30,12 @@ struct Dimmer dimmers[] = {
   { "Living",        6,      45,        47,       25 },
   { "Master",        7,      32,        34,        5 },
   { "ULiving",       8,      36,        38,        5 },
-  { "Bathrm2",       9,      40,        42,       47 },
+  { "Bathrm2",       9,      40,        42,       47 },
   { "Bathrm1",      11,      44,        46,       38 }
 };
 
 #define NUMBER_OF_DIMMERS 8
+
 
 unsigned int brightness[8] = {100,100,100,100,100,100,100,100};    // how bright the LEDs are
 int fadeAmount = 1;         // how many points to fade a LED by
@@ -76,7 +76,7 @@ void setup()
 void loop()
 {
   for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
-    if( digitalRead( dimmers[i].upinput ) == 0 ) { // Up button pressed
+    if( digitalRead( dimmers[i].upinput ) == 0 ) { // Up button pressed
       increase(i);
       Serial.print(dimmers[i].name);
       Serial.print(": ");
@@ -84,7 +84,7 @@ void loop()
       Serial.print(F("th circuit going up to "));
       Serial.println(brightness[i]);
     }
-    if( digitalRead( dimmers[i].downinput ) == 0 ) { // Down button pressed
+    if( digitalRead( dimmers[i].downinput ) == 0 ) { // Down button pressed
       decrease(i);
       Serial.print(dimmers[i].name);
       Serial.print(": ");

@@ -109,8 +109,10 @@ void loop()
       Serial.print(dimmers[i].name);
       Serial.print(": ");
       Serial.print(i);
-      Serial.print(F("th circuit going up to "));
-      Serial.println(brightness[i]);
+      Serial.print(F("th circuit going up to b, c "));
+      Serial.print(brightness[i]);
+      Serial.print(", ");
+      Serial.println(upcounter[i]);
     }
     if( digitalRead( dimmers[i].downinput ) == 0 ) { // Down button pressed
       decrease(i);
@@ -118,11 +120,14 @@ void loop()
       Serial.print(dimmers[i].name);
       Serial.print(": ");
       Serial.print(i);
-      Serial.print(F("th circuit going down to "));
-      Serial.println(brightness[i]);
+      Serial.print(F("th circuit going down to b, c "));
+      Serial.print(brightness[i]);
+      Serial.print(", ");
+      Serial.println(downcounter[i]);
     }  
     if( digitalRead( dimmers[i].upinput ) == 1 ) { // Up button released
       if( upcounter[i] > 0) {
+        digitalWrite(13, LOW);
         Serial.print(i);
         Serial.println(F(" up released."));
       }
@@ -130,6 +135,7 @@ void loop()
     }
     if( digitalRead( dimmers[i].downinput ) == 1 ) { // Down button released
       if( downcounter[i] > 0) {
+        digitalWrite(13, LOW);
         Serial.print(i);
         Serial.println(F(" down released."));
       }
@@ -142,6 +148,5 @@ void loop()
 
   } 
   delay(20);
-  digitalWrite(13, LOW);
 }
 

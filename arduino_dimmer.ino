@@ -41,6 +41,9 @@ unsigned int brightness[8] = {100,100,100,100,100,100,100,100};    // how bright
 int fadeAmount = 1;         // how many points to fade a LED by
 int32_t frequency = 100;    // frequency (in Hz)
 int maxlevel = 255 * 0.9;
+unsigned int upcounter[8] = {0,0,0,0,0,0,0,0}; // A proxy to see if the up button is kept pressed
+unsigned int downcounter[8] = {0,0,0,0,0,0,0,0}; // A proxy to see if the down button is kept pressed
+
 
 void increase(int i)
 {
@@ -102,6 +105,7 @@ void loop()
   for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
     if( digitalRead( dimmers[i].upinput ) == 0 ) { // Up button pressed
       increase(i);
+      upcounter[i]++;
       Serial.print(dimmers[i].name);
       Serial.print(": ");
       Serial.print(i);
@@ -110,12 +114,28 @@ void loop()
     }
     if( digitalRead( dimmers[i].downinput ) == 0 ) { // Down button pressed
       decrease(i);
+      downcounter[i]++;
       Serial.print(dimmers[i].name);
       Serial.print(": ");
       Serial.print(i);
       Serial.print(F("th circuit going down to "));
       Serial.println(brightness[i]);
     }  
+    if( digitalRead( dimmers[i].upinput ) == 1 ) { // Up button released
+      if( upcounter[i] > 0) {
+        Serial.print(i);
+        Serial.println(F(" up released."));
+      }
+      upcounter[i] = 0;
+    }
+    if( digitalRead( dimmers[i].downinput ) == 1 ) { // Down button released
+      if( downcounter[i] > 0) {
+        Serial.print(i);
+        Serial.println(F(" down released."));
+      }
+      downcounter[i] = 0;
+    }
+
     // Write the state to the LUD
     // pwmWrite(dimmers[i].output, brightness[i]);
     analogWrite(dimmers[i].output, brightness[i]); // Just when developing

@@ -37,17 +37,21 @@ struct Dimmer dimmers[] = {
 #define NUMBER_OF_DIMMERS 8
 
 
+unsigned int prevlevel[8] = {100,100,100,100,100,100,100,100};    // The previous brightness of the LEDS
 unsigned int brightness[8] = {100,100,100,100,100,100,100,100};    // how bright the LEDs are
 int fadeAmount = 1;         // how many points to fade a LED by
 int32_t frequency = 100;    // frequency (in Hz)
 int maxlevel = 255 * 0.9;
 unsigned int upcounter[8] = {0,0,0,0,0,0,0,0}; // A proxy to see if the up button is kept pressed
 unsigned int downcounter[8] = {0,0,0,0,0,0,0,0}; // A proxy to see if the down button is kept pressed
+int quickclick = 5;         // How many counts counts as a quick click
+
 
 
 void increase(int i)
 { 
   upcounter[i]++;
+  prevlevel[i] = brightness[i];
   digitalWrite(13, HIGH);
   if (brightness[i] < dimmers[i].lowlimit) {
     brightness[i] = dimmers[i].lowlimit;
@@ -62,6 +66,7 @@ void increase(int i)
 void decrease(int i)
 {
   downcounter[i]++;
+  prevlevel[i] = brightness[i];
   digitalWrite(13, HIGH);
   if(brightness[i] >= fadeAmount + dimmers[i].lowlimit) {
     brightness[i] = brightness[i] - fadeAmount;
@@ -138,6 +143,11 @@ void loop()
         digitalWrite(13, LOW);
         Serial.print(i);
         Serial.println(F(" down released."));
+        if( downcounter[i] <= quickclick) {
+          Serial.print(F("Turning off "));
+          Serial.println(dimmers[i].name);
+          brightness[i] = 0;
+        }
       }
       downcounter[i] = 0;
     }

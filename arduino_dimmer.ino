@@ -46,7 +46,8 @@ unsigned int downcounter[8] = {0,0,0,0,0,0,0,0}; // A proxy to see if the down b
 
 
 void increase(int i)
-{
+{ 
+  upcounter[i]++;
   digitalWrite(13, HIGH);
   if (brightness[i] < dimmers[i].lowlimit) {
     brightness[i] = dimmers[i].lowlimit;
@@ -60,6 +61,7 @@ void increase(int i)
 
 void decrease(int i)
 {
+  downcounter[i]++;
   digitalWrite(13, HIGH);
   if(brightness[i] >= fadeAmount + dimmers[i].lowlimit) {
     brightness[i] = brightness[i] - fadeAmount;
@@ -105,7 +107,6 @@ void loop()
   for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
     if( digitalRead( dimmers[i].upinput ) == 0 ) { // Up button pressed
       increase(i);
-      upcounter[i]++;
       Serial.print(dimmers[i].name);
       Serial.print(": ");
       Serial.print(i);
@@ -116,7 +117,6 @@ void loop()
     }
     if( digitalRead( dimmers[i].downinput ) == 0 ) { // Down button pressed
       decrease(i);
-      downcounter[i]++;
       Serial.print(dimmers[i].name);
       Serial.print(": ");
       Serial.print(i);

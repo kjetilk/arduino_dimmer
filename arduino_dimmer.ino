@@ -51,7 +51,9 @@ int quickclick = 5;         // How many counts counts as a quick click
 void increase(int i)
 { 
   upcounter[i]++;
-  prevlevel[i] = brightness[i];
+  if (upcounter[i] > quickclick) {
+    prevlevel[i] = brightness[i];
+  }
   digitalWrite(13, HIGH);
   if (brightness[i] < dimmers[i].lowlimit) {
     brightness[i] = dimmers[i].lowlimit;
@@ -66,7 +68,9 @@ void increase(int i)
 void decrease(int i)
 {
   downcounter[i]++;
-  prevlevel[i] = brightness[i];
+  if (downcounter[i] > quickclick) {
+    prevlevel[i] = brightness[i];
+  }
   digitalWrite(13, HIGH);
   if(brightness[i] >= fadeAmount + dimmers[i].lowlimit) {
     brightness[i] = brightness[i] - fadeAmount;
@@ -135,6 +139,13 @@ void loop()
         digitalWrite(13, LOW);
         Serial.print(i);
         Serial.println(F(" up released."));
+        if( upcounter[i] <= quickclick) {
+          Serial.print(F("Returning to previous state "));
+          Serial.print(prevlevel[i]);
+          Serial.print(" on ");
+          Serial.println(dimmers[i].name);
+          brightness[i] = prevlevel[i];
+        }
       }
       upcounter[i] = 0;
     }
@@ -146,6 +157,7 @@ void loop()
         if( downcounter[i] <= quickclick) {
           Serial.print(F("Turning off "));
           Serial.println(dimmers[i].name);
+          prevlevel[i] = brightness[i];
           brightness[i] = 0;
         }
       }

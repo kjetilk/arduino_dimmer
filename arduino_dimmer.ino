@@ -14,28 +14,28 @@
 #include <PWM.h>
 
 struct Dimmer {
-    char name[8];
-    char output;
-    byte upinput;
-    byte downinput;
-    byte lowlimit;
+  char name[8];
+  char output;
+  byte upinput;
+  byte downinput;
+  byte lowlimit;
+  byte nightlevel;
 };
 
 // Initialize the system with background knowledge
 struct Dimmer dimmers[] = {
-  /* name       output  upinput  downinput  lowlimit */
-  { "Kitchen",       2,      33,        35,       53 },
-  { "Unassig",       3,      37,        39,        5 },
-  { "Dining",        5,      41,        43,       55 },
-  { "Living",        6,      45,        47,       25 },
-  { "Master",        7,      32,        34,        5 },
-  { "ULiving",       8,      36,        38,        5 },
-  { "Bathrm2",       9,      40,        42,       47 },
-  { "Bathrm1",      11,      44,        46,       38 }
+  /* name       output  upinput  downinput  lowlimit nightlevel */
+  { "Kitchen",       2,      33,        35,       53,         0 },
+  { "Unassig",       3,      37,        39,        5,         0 },
+  { "Dining",        5,      41,        43,       55,         0 },
+  { "Living",        6,      45,        47,       25,        25 },
+  { "Master",        7,      32,        34,        7,         0 },
+  { "ULiving",       8,      36,        38,        5,        15 },
+  { "Bathrm2",       9,      40,        42,       47,        47 },
+  { "Bathrm1",      11,      44,        46,       38,        38 }
 };
 
 #define NUMBER_OF_DIMMERS 8
-
 
 unsigned int prevlevel[8] = {100,100,100,100,100,100,100,100};    // The previous brightness of the LEDS
 unsigned int brightness[8] = {100,100,100,100,100,100,100,100};    // how bright the LEDs are
@@ -46,7 +46,8 @@ unsigned int upcounter[8] = {0,0,0,0,0,0,0,0}; // A proxy to see if the up butto
 unsigned int downcounter[8] = {0,0,0,0,0,0,0,0}; // A proxy to see if the down button is kept pressed
 int quickclick = 5;         // How many counts counts as a quick click
 
-
+byte nightpin = 22;
+byte awaypin = 24;
 
 void increase(int i)
 { 
@@ -109,6 +110,10 @@ void setup()
   for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
     pinMode(dimmers[i].downinput, INPUT_PULLUP);
   }  
+
+  // Init special pins
+  pinMode(nightpin, INPUT_PULLUP);
+  pinMode(awaypin, INPUT_PULLUP);
 }
 
 void loop()
@@ -162,6 +167,14 @@ void loop()
         }
       }
       downcounter[i] = 0;
+    }
+
+    if( digitalRead( nightpin ) == 0 ) { // Night button pressed
+      for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
+        prevlevel[i] = brightness[i];
+        brightness[i] = dimmers[i].nightlevel;
+        Serial.println(F("Setting all dimmers in night state"));
+      }
     }
 
     // Write the state to the LUD

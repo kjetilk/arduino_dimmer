@@ -30,16 +30,55 @@ struct Dimmer dimmers[] = {
   { "Living",        6,      45,        47,       25 },
   { "Master",        7,      32,        34,        5 },
   { "ULiving",       8,      36,        38,        5 },
-  { "Bathrm2",       9,      40,        42,       47 },
+  { "Bathrm2",       9,      40,        42,       47 },
   { "Bathrm1",      11,      44,        46,       38 }
 };
 
 #define NUMBER_OF_DIMMERS 8
 
+
+unsigned int prevlevel[8] = {100,100,100,100,100,100,100,100};    // The previous brightness of the LEDS
 unsigned int brightness[8] = {100,100,100,100,100,100,100,100};    // how bright the LEDs are
 int fadeAmount = 1;         // how many points to fade a LED by
 int32_t frequency = 100;    // frequency (in Hz)
 int maxlevel = 255 * 0.9;
+unsigned int upcounter[8] = {0,0,0,0,0,0,0,0}; // A proxy to see if the up button is kept pressed
+unsigned int downcounter[8] = {0,0,0,0,0,0,0,0}; // A proxy to see if the down button is kept pressed
+int quickclick = 5;         // How many counts counts as a quick click
+
+
+
+void increase(int i)
+{ 
+  upcounter[i]++;
+  if (upcounter[i] > quickclick) {
+    prevlevel[i] = brightness[i];
+  }
+  digitalWrite(13, HIGH);
+  if (brightness[i] < dimmers[i].lowlimit) {
+    brightness[i] = dimmers[i].lowlimit;
+  }
+  else if (brightness[i] < maxlevel - fadeAmount) {
+    brightness[i] = brightness[i] + fadeAmount;
+  } else {
+    brightness[i] = maxlevel;
+  }
+}
+
+void decrease(int i)
+{
+  downcounter[i]++;
+  if (downcounter[i] > quickclick) {
+    prevlevel[i] = brightness[i];
+  }
+  digitalWrite(13, HIGH);
+  if(brightness[i] >= fadeAmount + dimmers[i].lowlimit) {
+    brightness[i] = brightness[i] - fadeAmount;
+  } else {
+    brightness[i] = 0;
+  }
+}
+
 
 void setup()
 {
@@ -51,7 +90,9 @@ void setup()
   bool success = true;
   
   for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
-    success &= SetPinFrequencySafe(dimmers[i].output, frequency);
+//    success &= SetPinFrequencySafe(dimmers[i].output, frequency);
+      pinMode(dimmers[i].output, OUTPUT); // Just when developing
+
   }
   //if the pin frequency was set successfully, turn pin 13 on
   if(success) {
@@ -73,40 +114,61 @@ void setup()
 void loop()
 {
   for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
-    if( digitalRead( dimmers[i].upinput ) == 0 ) { // Up button pressed
-      digitalWrite(13, HIGH);
-      if (brightness[i] < dimmers[i].lowlimit) {
-        brightness[i] = dimmers[i].lowlimit;
-      }
-      else if (brightness[i] < maxlevel - fadeAmount) {
-         brightness[i] = brightness[i] + fadeAmount;
-      } else {
-         brightness[i] = maxlevel;
-      }
+    if( digitalRead( dimmers[i].upinput ) == 0 ) { // Up button pressed
+      increase(i);
       Serial.print(dimmers[i].name);
       Serial.print(": ");
       Serial.print(i);
-      Serial.print(F("th circuit going up to "));
-      Serial.println(brightness[i]);
-    }  
-    if( digitalRead( dimmers[i].downinput ) == 0 ) { // Down button pressed
-      digitalWrite(13, HIGH);
-      if(brightness[i] >= fadeAmount + dimmers[i].lowlimit) {      
-        brightness[i] = brightness[i] - fadeAmount;
-      } else {
-        brightness[i] = 0;
-      }
+      Serial.print(F("th circuit going up to b, c "));
+      Serial.print(brightness[i]);
+      Serial.print(", ");
+      Serial.println(upcounter[i]);
+    }
+    if( digitalRead( dimmers[i].downinput ) == 0 ) { // Down button pressed
+      decrease(i);
       Serial.print(dimmers[i].name);
       Serial.print(": ");
       Serial.print(i);
-      Serial.print(F("th circuit going down to "));
-      Serial.println(brightness[i]);
+      Serial.print(F("th circuit going down to b, c "));
+      Serial.print(brightness[i]);
+      Serial.print(", ");
+      Serial.println(downcounter[i]);
     }  
-    
+    if( digitalRead( dimmers[i].upinput ) == 1 ) { // Up button released
+      if( upcounter[i] > 0) {
+        digitalWrite(13, LOW);
+        Serial.print(i);
+        Serial.println(F(" up released."));
+        if( upcounter[i] <= quickclick) {
+          Serial.print(F("Returning to previous state "));
+          Serial.print(prevlevel[i]);
+          Serial.print(" on ");
+          Serial.println(dimmers[i].name);
+          brightness[i] = prevlevel[i];
+        }
+      }
+      upcounter[i] = 0;
+    }
+    if( digitalRead( dimmers[i].downinput ) == 1 ) { // Down button released
+      if( downcounter[i] > 0) {
+        digitalWrite(13, LOW);
+        Serial.print(i);
+        Serial.println(F(" down released."));
+        if( downcounter[i] <= quickclick) {
+          Serial.print(F("Turning off "));
+          Serial.println(dimmers[i].name);
+          prevlevel[i] = brightness[i];
+          brightness[i] = 0;
+        }
+      }
+      downcounter[i] = 0;
+    }
+
     // Write the state to the LUD
-    pwmWrite(dimmers[i].output, brightness[i]);
+    // pwmWrite(dimmers[i].output, brightness[i]);
+    analogWrite(dimmers[i].output, brightness[i]); // Just when developing
+
   } 
   delay(20);
-  digitalWrite(13, LOW);
 }
 

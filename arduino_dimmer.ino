@@ -46,8 +46,8 @@ unsigned int upcounter[8] = {0,0,0,0,0,0,0,0}; // A proxy to see if the up butto
 unsigned int downcounter[8] = {0,0,0,0,0,0,0,0}; // A proxy to see if the down button is kept pressed
 int quickclick = 5;         // How many counts counts as a quick click
 
-const byte nightpin = 22;
-const byte awaypin = 24;
+const byte nightpin = 30;
+const byte awaypin = 28;
 
 void increase(int i)
 { 

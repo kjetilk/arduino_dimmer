@@ -175,6 +175,7 @@ void loop()
         brightness[i] = dimmers[i].nightlevel;
         Serial.println(F("Setting all dimmers in night state"));
       }
+      delay(100); // So that prevlevel won't be reset at loop
     }
 
     // Write the state to the LUD

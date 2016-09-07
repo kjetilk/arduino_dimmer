@@ -120,6 +120,7 @@ void setup()
   if ( digitalRead( awaypin ) == 1 ) {
     isaway = 0;
   }
+  Serial.println("reset");
 }
 
 void loop()

@@ -28,7 +28,7 @@ struct Dimmer dimmers[] = {
   { "Kitchen",       2,      33,        35,       53,         0 },
   { "Unassig",       3,      37,        39,        5,         0 },
   { "Dining",        5,      41,        43,       55,         0 },
-  { "Living",        6,      45,        47,       25,        40 },
+  { "Living",        6,      45,        47,       25,        35 },
   { "Master",        7,      32,        34,        7,         0 },
   { "ULiving",       8,      36,        38,       37,        46 },
   { "Bathrm2",       9,      40,        42,       42,        38 },
@@ -176,6 +176,8 @@ void loop()
     }
 
     if( digitalRead( nightpin ) == 0 ) { // Night button pressed
+      pwmWrite(dimmers[3].output, 60); // Hack to avoid only one being lit
+      pwmWrite(dimmers[7].output, 70);
       for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
         prevlevel[i] = brightness[i];
         brightness[i] = dimmers[i].nightlevel;
@@ -195,6 +197,8 @@ void loop()
 
     if( (isaway) && digitalRead( awaypin ) == 1 ) { // We just returned
       isaway = 0;
+      pwmWrite(dimmers[3].output, 60); // Hack to avoid only one being lit
+      pwmWrite(dimmers[7].output, 70);
       for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
         brightness[i] = dimmers[i].nightlevel;
       }

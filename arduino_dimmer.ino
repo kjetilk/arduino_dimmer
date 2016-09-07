@@ -28,11 +28,11 @@ struct Dimmer dimmers[] = {
   { "Kitchen",       2,      33,        35,       53,         0 },
   { "Unassig",       3,      37,        39,        5,         0 },
   { "Dining",        5,      41,        43,       55,         0 },
-  { "Living",        6,      45,        47,       25,        30 },
+  { "Living",        6,      45,        47,       25,        40 },
   { "Master",        7,      32,        34,        7,         0 },
   { "ULiving",       8,      36,        38,       37,        46 },
-  { "Bathrm2",       9,      40,        42,       47,        47 },
-  { "Bathrm1",      11,      44,        46,       38,        38 }
+  { "Bathrm2",       9,      40,        42,       42,        38 },
+  { "Bathrm1",      11,      44,        46,       38,        45 }
 };
 
 #define NUMBER_OF_DIMMERS 8

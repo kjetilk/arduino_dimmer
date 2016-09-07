@@ -32,7 +32,7 @@ struct Dimmer dimmers[] = {
   { "Master",        7,      32,        34,        7,         0 },
   { "ULiving",       8,      36,        38,       37,        46 },
   { "Bathrm2",       9,      40,        42,       42,        38 },
-  { "Bathrm1",      11,      44,        46,       38,        45 }
+  { "Bathrm1",      11,      44,        46,       38,        38 }
 };
 
 #define NUMBER_OF_DIMMERS 8
@@ -177,8 +177,6 @@ void loop()
     }
 
     if( digitalRead( nightpin ) == 0 ) { // Night button pressed
-      pwmWrite(dimmers[3].output, 60); // Hack to avoid only one being lit
-      pwmWrite(dimmers[7].output, 70);
       for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
         prevlevel[i] = brightness[i];
         brightness[i] = dimmers[i].nightlevel;
@@ -198,12 +196,13 @@ void loop()
 
     if( (isaway) && digitalRead( awaypin ) == 1 ) { // We just returned
       isaway = 0;
-      pwmWrite(dimmers[3].output, 60); // Hack to avoid only one being lit
-      pwmWrite(dimmers[7].output, 70);
       for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
         brightness[i] = dimmers[i].nightlevel;
+        if( dimmers[i].nightlevel > 0 ) {
+          brightness[i]+=20; // Add a bit to avoid problems with just one going on
+        }
       }
-      Serial.println(F("Just back, setting all dimmers at nightlevel"));
+      Serial.println(F("Just back, setting all dimmers at nightlevel + 20"));
     }
 
       

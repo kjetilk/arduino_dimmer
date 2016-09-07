@@ -179,8 +179,8 @@ void loop()
       for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
         prevlevel[i] = brightness[i];
         brightness[i] = dimmers[i].nightlevel;
-        Serial.println(F("Setting all dimmers in night state"));
       }
+      Serial.println(F("Setting all dimmers in night state"));
       delay(100); // So that prevlevel won't be reset at loop
     }
 

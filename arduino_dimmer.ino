@@ -49,6 +49,8 @@ int quickclick = 5;         // How many counts counts as a quick click
 const byte nightpin = 30;
 const byte awaypin = 28;
 
+boolean isaway = 1;
+
 void increase(int i)
 { 
   upcounter[i]++;
@@ -114,6 +116,10 @@ void setup()
   // Init special pins
   pinMode(nightpin, INPUT_PULLUP);
   pinMode(awaypin, INPUT_PULLUP);
+
+  if ( digitalRead( awaypin ) == 1 ) {
+    isaway = 0;
+  }
 }
 
 void loop()
@@ -177,6 +183,25 @@ void loop()
       }
       delay(100); // So that prevlevel won't be reset at loop
     }
+
+    if( (! isaway) && digitalRead( awaypin ) == 0 ) { // Away status is newly set
+      isaway = 1;
+      for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
+        prevlevel[i] = brightness[i];
+        brightness[i] = 0;
+      }
+      Serial.println(F("Setting all dimmers off while away"));
+    }
+
+    if( (isaway) && digitalRead( awaypin ) == 1 ) { // We just returned
+      isaway = 0;
+      for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
+        brightness[i] = dimmers[i].nightlevel;
+      }
+      Serial.println(F("Just back, setting all dimmers at nightlevel"));
+    }
+
+      
 
     // Write the state to the LUD
     pwmWrite(dimmers[i].output, brightness[i]);

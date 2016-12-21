@@ -68,8 +68,8 @@ void increase(int i)
   if (brightness[i] < dimmers[i].lowlimit) {
     brightness[i] = dimmers[i].lowlimit;
   }
-  else if (brightness[i] < maxlevel - fadeAmount) {
-    brightness[i] = brightness[i] + fadeAmount;
+  else if (brightness[i] < maxlevel - fadeAmount - int(upcounter[i]/8)) {
+    brightness[i] = brightness[i] + fadeAmount + int(upcounter[i]/8);
   } else {
     brightness[i] = maxlevel;
   }
@@ -82,8 +82,8 @@ void decrease(int i)
     setPrevLevel(i);
   }
   digitalWrite(13, HIGH);
-  if(brightness[i] >= fadeAmount + dimmers[i].lowlimit) {
-    brightness[i] = brightness[i] - fadeAmount;
+  if(brightness[i] >= fadeAmount + dimmers[i].lowlimit + int(downcounter[i]/8)) {
+    brightness[i] = brightness[i] - fadeAmount - int(downcounter[i]/8);
   } else {
     brightness[i] = 0;
   }

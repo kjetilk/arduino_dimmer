@@ -51,11 +51,18 @@ const byte awaypin = 28;
 
 boolean isaway = 1;
 
+void setPrevLevel(int i)
+{
+  if(brightness[i] > dimmers[i].lowlimit) {
+    prevlevel[i] = brightness[i];
+  }
+}
+
 void increase(int i)
 { 
   upcounter[i]++;
   if (upcounter[i] > quickclick) {
-    prevlevel[i] = brightness[i];
+    setPrevLevel(i);
   }
   digitalWrite(13, HIGH);
   if (brightness[i] < dimmers[i].lowlimit) {
@@ -72,7 +79,7 @@ void decrease(int i)
 {
   downcounter[i]++;
   if (downcounter[i] > quickclick) {
-    prevlevel[i] = brightness[i];
+    setPrevLevel(i);
   }
   digitalWrite(13, HIGH);
   if(brightness[i] >= fadeAmount + dimmers[i].lowlimit) {
@@ -169,7 +176,7 @@ void loop()
         if( downcounter[i] <= quickclick) {
           Serial.print(F("Turning off "));
           Serial.println(dimmers[i].name);
-          prevlevel[i] = brightness[i];
+          setPrevLevel(i);
           brightness[i] = 0;
         }
       }
@@ -178,7 +185,7 @@ void loop()
 
     if( digitalRead( nightpin ) == 0 ) { // Night button pressed
       for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
-        prevlevel[i] = brightness[i];
+        setPrevLevel(i);
         brightness[i] = dimmers[i].nightlevel;
       }
       Serial.println(F("Setting all dimmers in night state"));
@@ -188,7 +195,7 @@ void loop()
     if( (! isaway) && digitalRead( awaypin ) == 0 ) { // Away status is newly set
       isaway = 1;
       for( unsigned int i = 0; i < NUMBER_OF_DIMMERS; ++i ) {
-        prevlevel[i] = brightness[i];
+        setPrevLevel(i);
         brightness[i] = 0;
       }
       Serial.println(F("Setting all dimmers off while away"));
